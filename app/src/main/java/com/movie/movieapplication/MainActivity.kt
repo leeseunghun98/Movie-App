@@ -8,10 +8,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.movie.movieapplication.navigation.AppNavigation
 import com.movie.movieapplication.screens.mainscreen.MainScreen
 import com.movie.movieapplication.ui.theme.MovieApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +37,7 @@ fun MovieApp() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            MainScreen()
+            AppNavigation()
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.movie.movieapplication.screens.mainscreen
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.movie.movieapplication.data.DataOrException

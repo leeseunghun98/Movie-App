@@ -1,6 +1,6 @@
 package com.movie.movieapplication.model
 
-data class DailyBoxOfficeMovie(
+data class DailyBoxOfficeList(
     val audiAcc: String,
     val audiChange: String,
     val audiCnt: String,

@@ -2,6 +2,6 @@ package com.movie.movieapplication.model
 
 data class BoxOfficeResult(
     val boxofficeType: String,
-    val dailyBoxOfficeMovieList: List<DailyBoxOfficeMovie>,
+    val dailyBoxOfficeList: List<DailyBoxOfficeList>,
     val showRange: String
 )

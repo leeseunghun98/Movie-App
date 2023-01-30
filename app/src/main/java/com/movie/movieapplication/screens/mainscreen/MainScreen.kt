@@ -4,17 +4,17 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.movie.movieapplication.data.DataOrException
 import com.movie.movieapplication.model.DailyBoxOffice
 import com.movie.movieapplication.utils.getToday
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(), navController: NavController) {
     val data = produceState<DataOrException<DailyBoxOffice, Boolean, Exception>>(
         initialValue = DataOrException(loading = true)
     ) {
@@ -25,7 +25,6 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
         Log.d("로그", "Loading ...");
         CircularProgressIndicator()
     } else if (data.data != null) {
-        Log.d("로그", "Finished fetching data");
-        Text(text = data.data.toString())
+        val boxOffice = data.data!!.boxOfficeResult
     }
 }
