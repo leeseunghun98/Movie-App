@@ -15,6 +15,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.movie.movieapplication.R
+import com.movie.movieapplication.components.BasicScreen
 import com.movie.movieapplication.navigation.AllScreens
 import com.movie.movieapplication.ui.theme.MainColor
 import kotlinx.coroutines.delay
@@ -40,11 +41,7 @@ fun SplashScreen(navController: NavController) {
         navController.navigate(AllScreens.MainScreen.name)
     })
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize(),
-        color = MainColor,
-    ) {
+    BasicScreen {
         Image(
             painter = painterResource(
                 id = when (random) {

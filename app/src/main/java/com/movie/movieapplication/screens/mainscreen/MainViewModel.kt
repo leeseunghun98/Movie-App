@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("UNCHECKED_CAST")
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class MainViewModel @Inject constructor(private val repository: BoxOfficeRepository) : ViewModel() {

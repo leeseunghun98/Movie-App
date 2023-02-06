@@ -2,7 +2,6 @@ package com.movie.movieapplication.di
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.movie.movieapplication.model.navermovie.Rss
 import com.movie.movieapplication.network.BoxOfficeApi
 import com.movie.movieapplication.network.MovieApi
 import com.movie.movieapplication.utils.ApiKeys
