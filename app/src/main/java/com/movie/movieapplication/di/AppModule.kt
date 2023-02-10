@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.movie.movieapplication.network.BoxOfficeApi
 import com.movie.movieapplication.network.MovieApi
+import com.movie.movieapplication.network.SearchMovieInfoApi
 import com.movie.movieapplication.utils.ApiKeys
 import dagger.Module
 import dagger.Provides
@@ -30,12 +31,22 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideMovieApi(): MovieApi {
+    fun provideMovieNaverApi(): MovieApi {
         return Retrofit.Builder()
             .baseUrl(ApiKeys.MOVIE_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MovieApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideMovieInfoApi(): SearchMovieInfoApi {
+        return Retrofit.Builder()
+            .baseUrl(ApiKeys.BOXOFFICE_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SearchMovieInfoApi::class.java)
     }
 
 }

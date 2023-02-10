@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.movie.movieapplication.data.NavBoxData
+import com.movie.movieapplication.model.BoxOfficeInfo
 import com.movie.movieapplication.screens.mainscreen.MainScreen
 import com.movie.movieapplication.screens.moviedetailscreen.MovieDetailScreen
 import com.movie.movieapplication.screens.splashscreen.SplashScreen
@@ -27,13 +29,14 @@ fun AppNavigation() {
         }
 
         val route = AllScreens.MovieDetailScreen.name
-        composable("$route/{movieName}", arguments = listOf(
-            navArgument(name = "movieName") {
-                type = NavType.StringType
+        composable("$route/{movieBoxData}", arguments = listOf(
+            navArgument(name = "movieBoxData") {
+                type = NavBoxData()
             }
         )) {
-            it.arguments?.getString("movieName").let {
-                MovieDetailScreen(navController = navController, movieName = it.toString())
+            it.arguments?.let {
+                val boxData = it.getParcelable<BoxOfficeInfo>("movieBoxData")
+                MovieDetailScreen(navController = navController, movieBoxData = boxData!!)
             }
         }
     }

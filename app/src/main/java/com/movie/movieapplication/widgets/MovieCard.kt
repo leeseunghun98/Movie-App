@@ -1,21 +1,18 @@
 package com.movie.movieapplication.widgets
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -26,26 +23,27 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.movie.movieapplication.R
 import com.movie.movieapplication.data.DataOrException
 import com.movie.movieapplication.model.BoxOfficeInfo
 import com.movie.movieapplication.navigation.AllScreens
-import com.movie.movieapplication.screens.MovieViewModel
+import com.movie.movieapplication.screens.viewmodels.MovieViewModel
 import com.movie.movieapplication.ui.theme.DeepMainColor
 import com.movie.movieapplication.utils.getMovieItemsFromMovieInfo
 
 @Composable
 fun RankMovieCard(
     modifier: Modifier,
-    boxOfficeList: List<BoxOfficeInfo>,
-    rank: Int,
-    navController: NavController
+    movieInfo: BoxOfficeInfo,
+    rank: Int = -1,
+    navController: NavController?
 ) {
     Box(modifier = modifier.padding(top = 4.dp, bottom = 4.dp)) {
         MovieCard(
-            modifier = Modifier.padding(top = 15.dp),
-            boxOfficeList = boxOfficeList,
+            modifier = Modifier.padding(top = if (rank >= 0) 15.dp else 4.dp),
+            movieInfo = movieInfo,
             rank = rank,
             navController = navController
         )
@@ -57,11 +55,10 @@ fun RankMovieCard(
 fun MovieCard(
     modifier: Modifier = Modifier,
     movieViewModel: MovieViewModel = hiltViewModel(),
-    boxOfficeList: List<BoxOfficeInfo>,
-    navController: NavController,
+    movieInfo: BoxOfficeInfo,
+    navController: NavController?,
     rank: Int
 ) {
-    val movieInfo = boxOfficeList[rank]
     val movieName = movieInfo.movieNm
     val movieInformation =
         produceState(initialValue = DataOrException<JsonObject, Boolean, Exception>(loading = true)) {
@@ -71,11 +68,13 @@ fun MovieCard(
         modifier = modifier
             .padding(4.dp)
             .clickable {
-                navController.navigate(AllScreens.MovieDetailScreen.name + "/$movieName")
+                val json = Uri.encode(Gson().toJson(movieInfo))
+                navController?.navigate(AllScreens.MovieDetailScreen.name + "/${json}")
             }
             .background(color = DeepMainColor),
         shape = RoundedCornerShape(CornerSize(15.dp)),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray)
+        border = BorderStroke(width = 1.dp, color = Color.LightGray),
+        elevation = 4.dp
     ) {
         if (movieInformation.loading == true) {
             CircularProgressIndicator()
@@ -91,6 +90,8 @@ fun MovieCard(
 
 @Composable
 private fun RankIcon(rank: Int) {
+    if (rank == -1) return
+
     if (rank < 3) {
         val rankDrawable = when (rank) {
             0 -> R.drawable.rank1
@@ -103,7 +104,7 @@ private fun RankIcon(rank: Int) {
             modifier = Modifier.size(30.dp)
         )
     } else {
-        Text(text = "$rank", style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.LightGray))
+        Text(text = "${rank + 1}", style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.LightGray))
     }
 }
 

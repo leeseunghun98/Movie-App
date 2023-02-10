@@ -1,5 +1,9 @@
 package com.movie.movieapplication.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class BoxOfficeInfo(
     val audiAcc: String,
     val audiChange: String,
@@ -19,4 +23,4 @@ data class BoxOfficeInfo(
     val salesShare: String,
     val scrnCnt: String,
     val showCnt: String
-)
+): Parcelable

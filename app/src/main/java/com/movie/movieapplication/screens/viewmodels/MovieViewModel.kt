@@ -1,4 +1,4 @@
-package com.movie.movieapplication.screens
+package com.movie.movieapplication.screens.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonObject
@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class MovieViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
+open class MovieViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
     suspend fun getMovieInfo(movieName: String): DataOrException<JsonObject, Boolean, Exception> {
         return repository.getMovieInfo(movieName)
     }

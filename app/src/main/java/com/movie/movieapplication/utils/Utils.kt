@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.google.gson.JsonObject
 import com.movie.movieapplication.data.DataOrException
+import com.movie.movieapplication.model.searchmovieinfo.Actor
+import com.movie.movieapplication.model.searchmovieinfo.SearchMovieInfo
 import org.json.JSONArray
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -34,4 +36,10 @@ fun getMovieItemsFromMovieInfo(movieList: DataOrException<JsonObject, Boolean, E
 
 fun String.bstrip(): String {
     return this.replace("<b>", "").replace("</b>", "")
+}
+
+fun getPeople(peopleText: String): List<String> = peopleText.split("|").dropLast(1)
+
+fun getActors(movieInformation: SearchMovieInfo): List<Actor> {
+    return movieInformation.movieInfoResult.movieInfo.actors
 }
