@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,8 +32,11 @@ import com.google.gson.JsonObject
 import com.movie.movieapplication.components.BasicScreen
 import com.movie.movieapplication.data.DataOrException
 import com.movie.movieapplication.model.BoxOfficeInfo
+import com.movie.movieapplication.model.actor.ActorInfo
+import com.movie.movieapplication.model.actorcode.ActorCode
 import com.movie.movieapplication.model.searchmovieinfo.Actor
 import com.movie.movieapplication.model.searchmovieinfo.SearchMovieInfo
+import com.movie.movieapplication.screens.viewmodels.ActorInfoViewModel
 import com.movie.movieapplication.screens.viewmodels.MovieViewModel
 import com.movie.movieapplication.screens.viewmodels.SearchMovieInfoViewModel
 import com.movie.movieapplication.ui.theme.DeepMainColor
@@ -91,14 +95,20 @@ fun MovieDetailScaffold(
         } else if (movieDetailData.data != null) {
             MovieDetailContent(
                 movieDetailInfo = getMovieItemsFromMovieInfo(movieDetailData),
-                movieBoxData = movieBoxData
+                movieBoxData = movieBoxData,
+                navController = navController
             )
         }
     }
 }
 
 @Composable
-fun MovieDetailContent(movieDetailInfo: JSONObject, movieBoxData: BoxOfficeInfo, searchMovieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel()) {
+fun MovieDetailContent(
+    movieDetailInfo: JSONObject,
+    movieBoxData: BoxOfficeInfo,
+    searchMovieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel(),
+    navController: NavController
+) {
     val movieInfo = produceState(initialValue = DataOrException<SearchMovieInfo, Boolean, Exception>(loading = true)) {
         value = searchMovieInfoViewModel.getSearchMovieInfo(movieBoxData.movieCd)
     }.value
@@ -113,49 +123,90 @@ fun MovieDetailContent(movieDetailInfo: JSONObject, movieBoxData: BoxOfficeInfo,
         } else if (movieInfo.exception != null) {
             Log.d("로그", "MovieDetailScreen : Error while fetching data!!(SearchMovieInfoApi) ${movieInfo.exception}")
         } else if (movieInfo.data != null) {
-            Actors(actorList = getActors(movieInfo.data!!))
+            Actors(actorList = getActors(movieInfo.data!!), movieBoxData = movieBoxData, navController = navController)
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(text = movieBoxData.toString())
-            Text(text = "개봉일 : ${movieBoxData.openDt}")
-            Text(text = "순위 : ${movieBoxData.rank} / ${movieBoxData.rankInten}") // 증감분 포함
-            Text(text = "누적매출액 : ${movieBoxData.salesAcc}")
-            Text(text = "당일 관객 수 : ${movieBoxData.audiCnt} / ${movieBoxData.audiInten}") // 전일대비도 audiointen 포함
-            Text(text = "누적 관객 수 : ${movieBoxData.audiAcc}")
-            Text(text = "당일 상영된 횟수 : ${movieBoxData.showCnt}")
-        }
-    }
-}
-
-@Composable
-fun Actors(actorList: List<Actor>) {
-    // TODO : Fetch
-
-    Surface(modifier = Modifier.padding(4.dp), color = DeepMainColor, shape = RoundedCornerShape(
-        CornerSize(15.dp)
-    )) {
-        LazyRow(modifier = Modifier.padding(2.dp), contentPadding = PaddingValues(2.dp)) {
-            items(items = actorList) { item ->
-                ActorCard(actorInfo = item)
+        Surface(modifier = Modifier
+            .padding(4.dp)
+            .fillMaxWidth(), border = BorderStroke(width = 1.dp, color = Color.LightGray), shape = RoundedCornerShape(
+            CornerSize(15.dp)
+        ), color = DeepMainColor) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)) {
+                Text(text = "개봉일 : ${movieBoxData.openDt}", color = Color.LightGray)
+                Text(text = "순위 : ${movieBoxData.rank} / 지난주 대비 ${movieBoxData.rankInten}", color = Color.LightGray) // 증감분 포함
+                Text(text = buildAnnotatedString {  })
+                Text(text = "누적매출액 : ${movieBoxData.salesAcc}", color = Color.LightGray)
+                Text(text = "당일 관객 수 : ${movieBoxData.audiCnt} / ${movieBoxData.audiInten}", color = Color.LightGray) // 전일대비도 audiointen 포함
+                Text(text = "누적 관객 수 : ${movieBoxData.audiAcc}", color = Color.LightGray)
+                Text(text = "당일 상영된 횟수 : ${movieBoxData.showCnt}", color = Color.LightGray)
             }
         }
     }
 }
 
 @Composable
-fun ActorCard(actorInfo: Actor) {
+fun Actors(actorList: List<Actor>, movieBoxData: BoxOfficeInfo, navController: NavController) {
+    Surface(modifier = Modifier.padding(4.dp), color = DeepMainColor, shape = RoundedCornerShape(
+        CornerSize(15.dp)
+    )) {
+        LazyRow(modifier = Modifier.padding(2.dp), contentPadding = PaddingValues(2.dp)) {
+            items(items = actorList) { item ->
+                ActorCard(actorInfo = item, movieBoxData = movieBoxData, navController = navController)
+            }
+        }
+    }
+}
+
+@Composable
+fun ActorCard(
+    actorInfo: Actor,
+    actorInfoViewModel: ActorInfoViewModel = hiltViewModel(),
+    movieBoxData: BoxOfficeInfo,
+    navController: NavController
+) {
+
+    val actorCode = produceState(initialValue = DataOrException<ActorCode, Boolean, Exception>(loading = true)) {
+        value = actorInfoViewModel.getActorCode(peopleNm = actorInfo.peopleNm, filmoNames = movieBoxData.movieNm)
+    }.value
+
     Surface(
         modifier = Modifier
             .padding(2.dp)
             .width(100.dp)
-            .height(70.dp),
+            .height(70.dp)
+            .clickable {
+//                navController.navigate() TODO
+            },
         border = BorderStroke(width = 1.dp, color = Color.LightGray),
         shape = RoundedCornerShape(CornerSize(15.dp)),
         elevation = 4.dp,
-        color = Color(0xFF8C8D85)
+        color = Color(0xFF222222)
     ) {
-        Log.d("로그", "${actorInfo}")
+        if (actorCode.loading == true) {
+            CenterCircularProgressIndicator()
+        } else if (actorCode.exception != null) {
+            Log.d("로그", "MovieDetailScreen: Error while fetching ActorInfoViewModel.getActorCode()")
+        } else if (actorCode.data != null) {
+            val actor = produceState(initialValue = DataOrException<ActorInfo, Boolean, Exception>(loading = true)){
+                value = actorInfoViewModel.getActorInfo(actorCode.data!!.peopleListResult.peopleList[0].peopleCd)
+            }.value
+
+            if (actor.loading == true) {
+                CenterCircularProgressIndicator()
+            } else if (actor.exception != null) {
+                Log.d("로그", "MovieDetailScreen: Error while fetching ActorInfoViewModel.getActorInfo()")
+            } else if (actor.data != null) {
+                val actorData = actor.data!!.peopleInfoResult.peopleInfo
+                Column(modifier = Modifier.padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = actorData.peopleNm, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light, color = Color.LightGray))
+                    Text(text = actorData.repRoleNm, color = Color.Gray, fontSize = 15.sp, fontWeight = FontWeight.Light)
+                }
+            }
+        } else {
+            Text(text = actorInfo.peopleNm)
+        }
     }
 }
 
