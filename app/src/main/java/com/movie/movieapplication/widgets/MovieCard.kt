@@ -36,8 +36,10 @@ import com.movie.movieapplication.utils.getMovieItemsFromMovieInfo
 @Composable
 fun RankMovieCard(
     modifier: Modifier,
-    movieInfo: BoxOfficeInfo,
+    movieInfo: BoxOfficeInfo?,
     rank: Int = -1,
+    movieCode: String,
+    movieName: String,
     navController: NavController?
 ) {
     Box(modifier = modifier.padding(top = 4.dp, bottom = 4.dp)) {
@@ -45,6 +47,8 @@ fun RankMovieCard(
             modifier = Modifier.padding(top = if (rank >= 0) 15.dp else 4.dp),
             movieInfo = movieInfo,
             rank = rank,
+            movieCode = movieCode,
+            movieName = movieName,
             navController = navController
         )
         RankIcon(rank)
@@ -55,11 +59,12 @@ fun RankMovieCard(
 fun MovieCard(
     modifier: Modifier = Modifier,
     movieViewModel: MovieViewModel = hiltViewModel(),
-    movieInfo: BoxOfficeInfo,
+    movieInfo: BoxOfficeInfo?,
+    movieName: String,
+    movieCode: String,
     navController: NavController?,
     rank: Int
 ) {
-    val movieName = movieInfo.movieNm
     val movieInformation =
         produceState(initialValue = DataOrException<JsonObject, Boolean, Exception>(loading = true)) {
             value = movieViewModel.getMovieInfo(movieName)
@@ -68,8 +73,12 @@ fun MovieCard(
         modifier = modifier
             .padding(4.dp)
             .clickable {
-                val json = Uri.encode(Gson().toJson(movieInfo))
-                navController?.navigate(AllScreens.MovieDetailScreen.name + "/${json}")
+                if (movieInfo != null) {
+                    val json = Uri.encode(Gson().toJson(movieInfo))
+                    navController?.navigate(AllScreens.MovieDetailScreen.name + "/${movieName}/${movieCode}/${json}")
+                } else {
+                    navController?.navigate(AllScreens.MovieDetailScreen.name + "/${movieName}/${movieCode}")
+                }
             }
             .background(color = DeepMainColor),
         shape = RoundedCornerShape(CornerSize(15.dp)),

@@ -55,7 +55,7 @@ fun getIntenAnnotatedString(string: String, num: Int, inten: Int): AnnotatedStri
                     color = Color.LightGray
                 )
             ) {
-                append("$string : $num")
+                append("$string : ${formatNumber(num.toLong())}")
             }
             if (inten == 0) {
                 withStyle(

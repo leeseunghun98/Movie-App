@@ -18,9 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.*
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,9 +39,14 @@ import org.json.JSONObject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MovieDetailScreen(navController: NavController, movieBoxData: BoxOfficeInfo) {
+fun MovieDetailScreen(
+    navController: NavController,
+    movieBoxData: BoxOfficeInfo?,
+    movieName: String,
+    movieCode: String
+) {
     BasicScreen {
-        MovieDetailScaffold(navController = navController, movieBoxData = movieBoxData)
+        MovieDetailScaffold(navController = navController, movieBoxData = movieBoxData, movieName = movieName, movieCode = movieCode)
     }
 }
 
@@ -52,16 +55,17 @@ fun MovieDetailScreen(navController: NavController, movieBoxData: BoxOfficeInfo)
 @Composable
 fun MovieDetailScaffold(
     navController: NavController,
-    movieBoxData: BoxOfficeInfo,
+    movieBoxData: BoxOfficeInfo?,
+    movieName: String,
+    movieCode: String,
     movieViewModel: MovieViewModel = hiltViewModel(),
 ) {
     Scaffold(modifier = Modifier,
         backgroundColor = MainColor,
         topBar = {
-            MovieAppBar(navController = navController, title = movieBoxData.movieNm)
+            MovieAppBar(navController = navController, title = movieName)
         }) {
 
-        val movieName = movieBoxData.movieNm
         val movieDetailData =
             produceState(initialValue = DataOrException<JsonObject, Boolean, Exception>(loading = true)) {
                 value = movieViewModel.getMovieInfo(movieName)
@@ -85,7 +89,9 @@ fun MovieDetailScaffold(
             MovieDetailContent(
                 movieDetailInfo = getMovieItemsFromMovieInfo(movieDetailData),
                 movieBoxData = movieBoxData,
-                navController = navController
+                movieCode = movieCode,
+                navController = navController,
+                movieName = movieName
             )
         }
     }
@@ -94,16 +100,18 @@ fun MovieDetailScaffold(
 @Composable
 fun MovieDetailContent(
     movieDetailInfo: JSONObject,
-    movieBoxData: BoxOfficeInfo,
+    movieBoxData: BoxOfficeInfo?,
+    movieCode: String,
+    movieName: String,
     searchMovieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel(),
     navController: NavController
 ) {
     val movieInfo = produceState(initialValue = DataOrException<SearchMovieInfo, Boolean, Exception>(loading = true)) {
-        value = searchMovieInfoViewModel.getSearchMovieInfo(movieBoxData.movieCd)
+        value = searchMovieInfoViewModel.getSearchMovieInfo(movieCode)
     }.value
     Column(modifier = Modifier.fillMaxSize()) {
 
-        MovieInformationCard(movieBoxData = movieBoxData, movieDetailInfo = movieDetailInfo)
+        MovieInformationCard(movieBoxData = movieBoxData, movieDetailInfo = movieDetailInfo, movieName = movieName, movieCode = movieCode)
 
         Divider()
 
@@ -112,15 +120,16 @@ fun MovieDetailContent(
         } else if (movieInfo.exception != null) {
             Log.d("로그", "MovieDetailScreen : Error while fetching data!!(SearchMovieInfoApi) ${movieInfo.exception}")
         } else if (movieInfo.data != null) {
-            Actors(actorList = getActors(movieInfo.data!!), movieBoxData = movieBoxData, navController = navController)
+            Actors(actorList = getActors(movieInfo.data!!), movieName = movieName, navController = navController)
         }
-
-        MovieBoxDataCard(movieBoxData)
+        if (movieBoxData != null){
+            MovieBoxDataCard(movieBoxData)
+        }
     }
 }
 
 @Composable
-fun MovieInformationCard(movieBoxData: BoxOfficeInfo, movieDetailInfo: JSONObject) {
+fun MovieInformationCard(movieBoxData: BoxOfficeInfo?, movieDetailInfo: JSONObject, movieCode: String, movieName: String) {
     val uriHandler = LocalUriHandler.current
     Card(
         modifier = Modifier
@@ -137,7 +146,9 @@ fun MovieInformationCard(movieBoxData: BoxOfficeInfo, movieDetailInfo: JSONObjec
                 RankMovieCard(
                     modifier = Modifier.fillMaxWidth(),
                     movieInfo = movieBoxData,
-                    navController = null
+                    navController = null,
+                    movieCode = movieCode,
+                    movieName = movieName
                 )
             }
 
@@ -155,19 +166,6 @@ fun MovieInformationCard(movieBoxData: BoxOfficeInfo, movieDetailInfo: JSONObjec
                     Column(modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())) {
-                        if (movieBoxData.rankOldAndNew == "NEW") {
-                            Text(
-                                text = "NEW!",
-                                style = TextStyle(
-                                    color = Color.Yellow,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    fontStyle = FontStyle.Italic,
-                                    textAlign = TextAlign.Center
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
                         val textstyle = TextStyle(
                             color = Color.Gray,
                             fontSize = 20.sp
@@ -220,7 +218,6 @@ fun MovieBoxDataCard(movieBoxData: BoxOfficeInfo) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Text(text = "개봉일 : ${movieBoxData.openDt}", color = Color.LightGray)
             Text(
                 text = getIntenAnnotatedString(
                     string = "순위",

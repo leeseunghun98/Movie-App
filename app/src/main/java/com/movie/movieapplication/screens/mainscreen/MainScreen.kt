@@ -106,22 +106,22 @@ fun MainContent(
                     shape = RoundedCornerShape(CornerSize(15.dp))
                 )
             Row(modifier = rowModifier) {
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[1], rank = 1, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[0], rank = 0, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[2], rank = 2, navController = navController)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[1], rank = 1, navController = navController, movieName = boxOfficeList[1].movieNm, movieCode = boxOfficeList[1].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[0], rank = 0, navController = navController, movieName = boxOfficeList[0].movieNm, movieCode = boxOfficeList[0].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[2], rank = 2, navController = navController, movieName = boxOfficeList[2].movieNm, movieCode = boxOfficeList[2].movieCd)
             }
             Divider()
             Row(modifier = rowModifier) {
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[3], rank = 3, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[4], rank = 4, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[5], rank = 5, navController = navController)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[3], rank = 3, navController = navController, movieName = boxOfficeList[3].movieNm, movieCode = boxOfficeList[3].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[4], rank = 4, navController = navController, movieName = boxOfficeList[4].movieNm, movieCode = boxOfficeList[4].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[5], rank = 5, navController = navController, movieName = boxOfficeList[5].movieNm, movieCode = boxOfficeList[5].movieCd)
             }
             Divider()
             Row(modifier = rowModifier) {
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[6], rank = 6, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[7], rank = 7, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[8], rank = 8, navController = navController)
-                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[9], rank = 9, navController = navController)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[6], rank = 6, navController = navController, movieName = boxOfficeList[6].movieNm, movieCode = boxOfficeList[6].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[7], rank = 7, navController = navController, movieName = boxOfficeList[7].movieNm, movieCode = boxOfficeList[7].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[8], rank = 8, navController = navController, movieName = boxOfficeList[8].movieNm, movieCode = boxOfficeList[8].movieCd)
+                RankMovieCard(modifier = modifier, movieInfo = boxOfficeList[9], rank = 9, navController = navController, movieName = boxOfficeList[9].movieNm, movieCode = boxOfficeList[9].movieCd)
             }
         }
     }

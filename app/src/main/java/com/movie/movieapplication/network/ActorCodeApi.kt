@@ -12,6 +12,7 @@ interface ActorCodeApi {
     suspend fun getActorCode(
         @Query("key") key: String = ApiKeys.BOXOFFICE_API_KEY,
         @Query("filmoNames") filmoNames: String,
-        @Query("peopleNm") peopleNm: String
+        @Query("peopleNm") peopleNm: String,
+        @Query("itemPerPage") itemPerPage: String = "1"
     ): ActorCode
 }
