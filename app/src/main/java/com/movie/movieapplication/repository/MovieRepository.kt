@@ -6,9 +6,18 @@ import com.movie.movieapplication.network.MovieApi
 import javax.inject.Inject
 
 class MovieRepository @Inject constructor(private val api: MovieApi){
-    suspend fun getMovieInfo(movie: String): DataOrException<JsonObject, Boolean, Exception> {
+    suspend fun getMovieInfo(movieName: String, country: String, year: Int): DataOrException<JsonObject, Boolean, Exception> {
         val response = try {
-            api.getMovieData(movie)
+            api.getMovieData(movieName = movieName, country = country, yearfrom = year, yearto = year)
+        } catch (exception: Exception) {
+            return DataOrException(exception = exception)
+        }
+        return DataOrException(data = response)
+    }
+
+    suspend fun searchMovies(movieName: String): DataOrException<JsonObject, Boolean, Exception> {
+        val response = try {
+            api.searchMovies(movieName = movieName)
         } catch (exception: Exception) {
             return DataOrException(exception = exception)
         }

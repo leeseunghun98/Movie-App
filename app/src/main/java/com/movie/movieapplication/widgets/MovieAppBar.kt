@@ -1,6 +1,7 @@
 package com.movie.movieapplication.widgets
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.movie.movieapplication.navigation.AllScreens
 import com.movie.movieapplication.screens.mainscreen.MainViewModel
+import com.movie.movieapplication.screens.searchscreen.SearchBar
 import com.movie.movieapplication.ui.theme.DeepMainColor
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -68,23 +71,25 @@ fun MovieAppBar(
             }
         },
         actions = {
-            IconButton(onClick = {
-// TODO               navController.navigate()
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "search icon",
-                    tint = Color.White
-                )
-            }
-            IconButton(onClick = {
+            if (isMainScreen) {
+                IconButton(onClick = {
+                    navController.navigate(AllScreens.SearchScreen.name)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "search icon",
+                        tint = Color.White
+                    )
+                }
+                IconButton(onClick = {
 // TODO                onMenuClicked()
-            }) {
-                Icon(
-                    imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = "More Icon",
-                    tint = Color.White
-                )
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.MoreVert,
+                        contentDescription = "More Icon",
+                        tint = Color.White
+                    )
+                }
             }
         },
         navigationIcon = if (!isMainScreen) {

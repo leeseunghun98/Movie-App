@@ -7,9 +7,9 @@ import androidx.compose.ui.text.*
 import androidx.compose.ui.text.style.TextIndent
 import com.google.gson.JsonObject
 import com.movie.movieapplication.data.DataOrException
-import com.movie.movieapplication.model.searchmovieinfo.Actor
-import com.movie.movieapplication.model.searchmovieinfo.SearchMovieInfo
+import com.movie.movieapplication.model.searchmovieinfo.*
 import org.json.JSONArray
+import org.json.JSONObject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -34,14 +34,25 @@ fun getLastMonth(): String {
     return cur.format(formatter)
 }
 
-fun getMovieItemsFromMovieInfo(movieList: DataOrException<JsonObject, Boolean, Exception>) =
-    JSONArray(movieList.data!!.get("items").toString()).getJSONObject(0)
+fun getMovieItemsFromMovieInfo(movieList: JsonObject): JSONObject? {
+    val json = JSONArray(movieList.get("items").toString())
+    if (json.length() > 0) {
+        return json.getJSONObject(0)
+    }
+    return null
+}
 
 fun String.bstrip(): String {
     return this.replace("<b>", "").replace("</b>", "")
 }
 
-fun getPeople(peopleText: String): List<String> = peopleText.split("|").dropLast(1)
+fun getDirector(directors: List<Director>): List<String> = directors.map { it.peopleNm }
+
+fun getGenre(genres: List<Genre>): List<String> = genres.map { it.genreNm }
+
+fun getNations(nations: List<Nation>): List<String> = nations.map { it.nationNm }
+
+fun getGradeNm(audits: List<Audit>): Set<String> = audits.map { it.watchGradeNm }.toSet()
 
 fun getActors(movieInformation: SearchMovieInfo): List<Actor> {
     return movieInformation.movieInfoResult.movieInfo.actors
@@ -95,4 +106,16 @@ fun formatNumber(num: Long, isMoney: Boolean = false): String {
     val manString = if (man > 0) "${man}만 " else ""
 
     return if (isMoney) "$eokString$manString${won}원" else "$eokString$manString$won"
+}
+
+fun countryNameToCode(countryName: String): String {
+    return when (countryName) {
+        "한국" -> "KR"
+        "프랑스" -> "FR"
+        "영국" -> "GB"
+        "일본" -> "JP"
+        "미국" -> "US"
+        "홍콩" -> "HK"
+        else -> "ETC"
+    }
 }

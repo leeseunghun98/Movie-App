@@ -53,7 +53,7 @@ fun ActorCard(
             .width(100.dp)
             .height(70.dp)
             .clickable {
-                navController.navigate(AllScreens.ActorDetailScreen.name + "/${actorInfo.peopleNm}/${movieName}")
+                navController.navigate(AllScreens.ActorDetailScreen.name + "?actorName=${actorInfo.peopleNm}/filmoName=${movieName}")
             },
         border = BorderStroke(width = 1.dp, color = Color.LightGray),
         shape = RoundedCornerShape(CornerSize(15.dp)),
@@ -62,7 +62,7 @@ fun ActorCard(
     ) {
         Column(modifier = Modifier.padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = actorInfo.peopleNm, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light, color = Color.LightGray))
-            Text(text = actorInfo.cast + " 역", color = Color.Gray, fontSize = 15.sp, fontWeight = FontWeight.Light)
+            Text(text = if (actorInfo.cast == "") "배우" else actorInfo.cast + " 역", color = Color.Gray, fontSize = 15.sp, fontWeight = FontWeight.Light)
         }
     }
 }

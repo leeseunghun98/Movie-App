@@ -4,5 +4,6 @@ enum class AllScreens {
     SplashScreen,
     MainScreen,
     MovieDetailScreen,
-    ActorDetailScreen
+    ActorDetailScreen,
+    SearchScreen
 }

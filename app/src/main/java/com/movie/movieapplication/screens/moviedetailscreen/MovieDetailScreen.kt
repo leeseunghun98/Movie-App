@@ -23,11 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.gson.JsonObject
 import com.movie.movieapplication.components.BasicScreen
 import com.movie.movieapplication.data.DataOrException
 import com.movie.movieapplication.model.BoxOfficeInfo
-import com.movie.movieapplication.model.searchmovieinfo.SearchMovieInfo
+import com.movie.movieapplication.model.searchmovieinfo.*
 import com.movie.movieapplication.screens.viewmodels.MovieViewModel
 import com.movie.movieapplication.screens.viewmodels.SearchMovieInfoViewModel
 import com.movie.movieapplication.ui.theme.DeepMainColor
@@ -35,18 +34,16 @@ import com.movie.movieapplication.ui.theme.MainColor
 import com.movie.movieapplication.utils.*
 import com.movie.movieapplication.widgets.*
 import kotlinx.coroutines.*
-import org.json.JSONObject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MovieDetailScreen(
     navController: NavController,
     movieBoxData: BoxOfficeInfo?,
-    movieName: String,
     movieCode: String
 ) {
     BasicScreen {
-        MovieDetailScaffold(navController = navController, movieBoxData = movieBoxData, movieName = movieName, movieCode = movieCode)
+        MovieDetailScaffold(navController = navController, movieBoxData = movieBoxData, movieCode = movieCode)
     }
 }
 
@@ -56,42 +53,29 @@ fun MovieDetailScreen(
 fun MovieDetailScaffold(
     navController: NavController,
     movieBoxData: BoxOfficeInfo?,
-    movieName: String,
     movieCode: String,
     movieViewModel: MovieViewModel = hiltViewModel(),
+    searchMovieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel()
 ) {
-    Scaffold(modifier = Modifier,
-        backgroundColor = MainColor,
-        topBar = {
-            MovieAppBar(navController = navController, title = movieName)
-        }) {
+    val movieInfoData = produceState(initialValue = DataOrException<SearchMovieInfo, Boolean, Exception>(loading = true)) {
+        value = searchMovieInfoViewModel.getSearchMovieInfo(movieCd = movieCode)
+    }.value
 
-        val movieDetailData =
-            produceState(initialValue = DataOrException<JsonObject, Boolean, Exception>(loading = true)) {
-                value = movieViewModel.getMovieInfo(movieName)
-            }.value
-        Log.d("로그", "1  ${movieDetailData.data}")
-        if (movieDetailData.loading == true) {
-            CenterCircularProgressIndicator()
-        } else if (movieDetailData.exception != null) {
-            CenterCircularProgressIndicator()
-            // TODO : HTTP 429 ERROR
-//            movieDetailData.exception = null
-//            GlobalScope.launch(Dispatchers.IO) {
-//                do {
-//                    delay(500)
-//                    movieDetailData = movieViewModel.getMovieInfo(movieName)
-//                    delay(500)
-//                } while (movieDetailData.data == null)
-//                state.value = !state.value
-//            }
-        } else if (movieDetailData.data != null) {
+    if (movieInfoData.loading == true) {
+        CenterCircularProgressIndicator()
+    } else if (movieInfoData.exception != null) {
+        Log.d("로그", "MovieDetailScreen : Error while fetching data! ${movieInfoData.exception}")
+    } else if (movieInfoData.data != null) {
+        val movieName = movieInfoData.data!!.movieInfoResult.movieInfo.movieNm
+        Scaffold(modifier = Modifier,
+            backgroundColor = MainColor,
+            topBar = {
+                MovieAppBar(navController = navController, title = movieName)
+            }) {
             MovieDetailContent(
-                movieDetailInfo = getMovieItemsFromMovieInfo(movieDetailData),
                 movieBoxData = movieBoxData,
-                movieCode = movieCode,
                 navController = navController,
-                movieName = movieName
+                movieInfo = movieInfoData.data!!.movieInfoResult.movieInfo
             )
         }
     }
@@ -99,28 +83,26 @@ fun MovieDetailScaffold(
 
 @Composable
 fun MovieDetailContent(
-    movieDetailInfo: JSONObject,
     movieBoxData: BoxOfficeInfo?,
-    movieCode: String,
-    movieName: String,
+    movieInfo: MovieInfo,
     searchMovieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val movieInfo = produceState(initialValue = DataOrException<SearchMovieInfo, Boolean, Exception>(loading = true)) {
-        value = searchMovieInfoViewModel.getSearchMovieInfo(movieCode)
+    val movieInfoData = produceState(initialValue = DataOrException<SearchMovieInfo, Boolean, Exception>(loading = true)) {
+        value = searchMovieInfoViewModel.getSearchMovieInfo(movieCd = movieInfo.movieCd)
     }.value
     Column(modifier = Modifier.fillMaxSize()) {
-
-        MovieInformationCard(movieBoxData = movieBoxData, movieDetailInfo = movieDetailInfo, movieName = movieName, movieCode = movieCode)
-
-        Divider()
-
-        if (movieInfo.loading == true) {
+        if (movieInfoData.loading == true) {
             CenterCircularProgressIndicator()
-        } else if (movieInfo.exception != null) {
-            Log.d("로그", "MovieDetailScreen : Error while fetching data!!(SearchMovieInfoApi) ${movieInfo.exception}")
-        } else if (movieInfo.data != null) {
-            Actors(actorList = getActors(movieInfo.data!!), movieName = movieName, navController = navController)
+        } else if (movieInfoData.exception != null) {
+            Log.d("로그", "MovieDetailScreen : Error while fetching data!!(SearchMovieInfoApi) ${movieInfoData.exception}")
+        } else if (movieInfoData.data != null) {
+            val movieInfo = movieInfoData.data!!.movieInfoResult.movieInfo
+            MovieInformationCard(movieBoxData = movieBoxData, movieInfo = movieInfo)
+
+            Divider()
+
+            Actors(actorList = getActors(movieInfoData.data!!), movieName = movieInfo.movieNm, navController = navController)
         }
         if (movieBoxData != null){
             MovieBoxDataCard(movieBoxData)
@@ -129,7 +111,7 @@ fun MovieDetailContent(
 }
 
 @Composable
-fun MovieInformationCard(movieBoxData: BoxOfficeInfo?, movieDetailInfo: JSONObject, movieCode: String, movieName: String) {
+fun MovieInformationCard(movieBoxData: BoxOfficeInfo?, movieInfo: MovieInfo) {
     val uriHandler = LocalUriHandler.current
     Card(
         modifier = Modifier
@@ -145,10 +127,9 @@ fun MovieInformationCard(movieBoxData: BoxOfficeInfo?, movieDetailInfo: JSONObje
             Column(modifier = Modifier.weight(0.4f), verticalArrangement = Arrangement.Center) {
                 RankMovieCard(
                     modifier = Modifier.fillMaxWidth(),
-                    movieInfo = movieBoxData,
+                    movieBoxInfo = movieBoxData,
                     navController = null,
-                    movieCode = movieCode,
-                    movieName = movieName
+                    movieInfo = movieInfo
                 )
             }
 
@@ -170,35 +151,19 @@ fun MovieInformationCard(movieBoxData: BoxOfficeInfo?, movieDetailInfo: JSONObje
                             color = Color.Gray,
                             fontSize = 20.sp
                         )
-                        Text(text = "Subtitle : ${movieDetailInfo.get("subtitle") ?: ""}",style = textstyle)
-                        val directorList = getPeople((movieDetailInfo.get("director") ?: "").toString())
-                        Text(text = "감독 : ${directorList.joinToString(", ")}", style = textstyle)
-                        Text(text = "제작 년도 : ${movieDetailInfo.get("pubDate") ?: ""}", style = textstyle)
-                        Text(text = "평점 : ${movieDetailInfo.get("userRating") ?: ""}", style = textstyle)
-                    }
-
-                    Surface(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(35.dp)
-                        .clickable {
-                            uriHandler.openUri(
-                                movieDetailInfo
-                                    .get("link")
-                                    .toString()
-                            )
-                        }, color = Color(0xFFC0C0C0),
-                        shape = RoundedCornerShape(CornerSize(15.dp))
-                    ) {
-                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxSize()) {
-                            Text(text = "영화정보 보러가기", fontSize = 15.sp, fontWeight = FontWeight.Light, modifier = Modifier)
-                        }
+                        Text(text = "감독 : ${getDirector(movieInfo.directors).joinToString(", ")}", style = textstyle)
+                        Text(text = "개봉연도 : ${movieInfo.prdtYear}", style = textstyle)
+                        Text(text = "장르 : ${getGenre(movieInfo.genres).joinToString(", ")}", style = textstyle)
+                        Text(text = "제작국가 : ${getNations(movieInfo.nations).joinToString(", ")}", style = textstyle)
+                        Text(text = "관람등급 : ${getGradeNm(movieInfo.audits).joinToString(", ")}", style = textstyle)
                     }
                 }
             }
+
         }
     }
 }
+
 
 
 @Composable

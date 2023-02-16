@@ -5,7 +5,7 @@ import androidx.navigation.NavType
 import com.google.gson.Gson
 import com.movie.movieapplication.model.BoxOfficeInfo
 
-class NavBoxData : NavType<BoxOfficeInfo>(isNullableAllowed = false) {
+class NavBoxData : NavType<BoxOfficeInfo>(isNullableAllowed = true) {
     override fun get(bundle: Bundle, key: String): BoxOfficeInfo? {
         return bundle.getParcelable(key)
     }

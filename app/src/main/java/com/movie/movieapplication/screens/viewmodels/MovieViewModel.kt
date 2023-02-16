@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class MovieViewModel @Inject constructor(private val repository: MovieRepository): ViewModel() {
-    suspend fun getMovieInfo(movieName: String): DataOrException<JsonObject, Boolean, Exception> {
-        return repository.getMovieInfo(movieName)
+    suspend fun getMovieInfo(movieName: String, country: String, year: Int): DataOrException<JsonObject, Boolean, Exception> {
+        return repository.getMovieInfo(movieName = movieName, country = country, year = year)
     }
 }

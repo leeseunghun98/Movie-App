@@ -15,6 +15,13 @@ interface MovieApi {
         "X-Naver-Client-Secret: ${ApiKeys.CLIENT_SECRET}"
     )
     suspend fun getMovieData(
-        @Query("query") query: String
+        @Query("query") movieName: String,
+        @Query("country") country: String,
+        @Query("yearfrom") yearfrom: Int,
+        @Query("yearto") yearto: Int
+    ): JsonObject
+
+    suspend fun searchMovies(
+        @Query("query") movieName: String,
     ): JsonObject
 }
