@@ -35,6 +35,7 @@ import com.movie.movieapplication.screens.viewmodels.MovieViewModel
 import com.movie.movieapplication.ui.theme.MainColor
 import com.movie.movieapplication.widgets.CenterCircularProgressIndicator
 import com.movie.movieapplication.widgets.MovieAppBar
+import org.json.JSONArray
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -58,18 +59,35 @@ fun SearchScreenScaffold(navController: NavController) {
 }
 
 @Composable
-fun SearchItems(
-    navController: NavController,
-    onSearchClicked: () -> Unit) {
-    Column(modifier = Modifier.padding(4.dp)) {
+fun SearchItems(navController: NavController, searchViewModel: SearchViewModel = hiltViewModel()) {
+    val searchedMovieList = searchViewModel.movieList.collectAsState().value
+    if (searchedMovieList.loading == true) {
+        CenterCircularProgressIndicator()
+    } else if (searchedMovieList.exception != null) {
+        Log.d("로그", "SearchItesms : Error while fetching data! ${searchedMovieList.exception}")
+    } else if (searchedMovieList.data != null) {
+        Log.d("로그", "data is not null : ${searchedMovieList.data}")
+        Column(modifier = Modifier.padding(4.dp)) {
+
+        }
+    }
+    searchedMovieList.data?.run {
+        Log.d("로그", "$this")
+//        val items = JSONArray(it.get("items").toString())
+//
+//        val list = mutableListOf<String>()
+//
+//        for (i in 0 until items.length()) {
+//            val value = items.get(i).get
+//            list.add(value)
+//        }
 
     }
+
 }
 
 @Composable
 fun SearchScreenContent(navController: NavController, searchViewModel: SearchViewModel = hiltViewModel()) {
-    val movieList = searchViewModel.movieList.collectAsState().value
-
     Column(
         modifier = Modifier
             .padding(4.dp)
@@ -82,7 +100,7 @@ fun SearchScreenContent(navController: NavController, searchViewModel: SearchVie
         ) {
             searchViewModel.updateSearchBarWithMovieName(it)
         }
-        SearchItems(navController = navController, )
+        SearchItems(navController = navController)
     }
 }
 

@@ -21,6 +21,11 @@ interface MovieApi {
         @Query("yearto") yearto: Int
     ): JsonObject
 
+    @GET(value = "movie")
+    @Headers(
+        "X-Naver-Client-Id: ${ApiKeys.CLIENT_ID}",
+        "X-Naver-Client-Secret: ${ApiKeys.CLIENT_SECRET}"
+    )
     suspend fun searchMovies(
         @Query("query") movieName: String,
     ): JsonObject

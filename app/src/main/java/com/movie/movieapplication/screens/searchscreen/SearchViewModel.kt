@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchViewModel @Inject constructor(private val repository: MovieRepository) : ViewModel() {
     private val _movieList = MutableStateFlow<DataOrException<JsonObject, Boolean, Exception>>(
-        DataOrException(loading = true)
+        DataOrException(exception = null, data = null, loading = false)
     )
     val movieList = _movieList.asStateFlow()
 
