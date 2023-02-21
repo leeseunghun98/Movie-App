@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,16 +23,22 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.movie.movieapplication.components.BasicScreen
 import com.movie.movieapplication.data.DataOrException
 import com.movie.movieapplication.model.searchmovieinfo.SearchMovieInfo
-import com.movie.movieapplication.screens.moviedetailscreen.MovieDetailContent
-import com.movie.movieapplication.screens.viewmodels.MovieViewModel
+import com.movie.movieapplication.model.searchmovielist.SearchMovieList
+import com.movie.movieapplication.screens.viewmodels.SearchMovieInfoViewModel
 import com.movie.movieapplication.ui.theme.MainColor
 import com.movie.movieapplication.widgets.CenterCircularProgressIndicator
 import com.movie.movieapplication.widgets.MovieAppBar
+import com.movie.movieapplication.widgets.MovieImageCard
 import org.json.JSONArray
+import org.json.JSONObject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -66,24 +69,27 @@ fun SearchItems(navController: NavController, searchViewModel: SearchViewModel =
     } else if (searchedMovieList.exception != null) {
         Log.d("로그", "SearchItesms : Error while fetching data! ${searchedMovieList.exception}")
     } else if (searchedMovieList.data != null) {
-        Log.d("로그", "data is not null : ${searchedMovieList.data}")
-        Column(modifier = Modifier.padding(4.dp)) {
-
+        val items = JSONArray(searchedMovieList.data!!.get("items").toString())
+        Column(modifier = Modifier
+            .padding(4.dp)
+            .width(100.dp)) {
+            for (i in 0 until items.length()) {
+                Log.d("로그", "i : $i")
+                val item: JsonObject = Gson().fromJson(items.get(i).toString(), JsonObject::class.java)
+                SearchMovieCard(navController = navController, item = item)
+            }
         }
     }
-    searchedMovieList.data?.run {
-        Log.d("로그", "$this")
-//        val items = JSONArray(it.get("items").toString())
-//
-//        val list = mutableListOf<String>()
-//
-//        for (i in 0 until items.length()) {
-//            val value = items.get(i).get
-//            list.add(value)
-//        }
+}
 
+@Composable
+fun SearchMovieCard(navController: NavController, item: JsonObject, searchViewModel: SearchViewModel = hiltViewModel(), movieInfoViewModel: SearchMovieInfoViewModel = hiltViewModel()) {
+    val movieName = item.get("title").toString().replace("\"", "")
+    val directorName = item.get("director").toString().split("|")[0].substring(1)
+    val json = JsonObject().apply {
+        add("items", JsonArray().apply{add(item)})
     }
-
+    MovieImageCard(navController = navController, movieInformation = json, movieInfo = null)
 }
 
 @Composable

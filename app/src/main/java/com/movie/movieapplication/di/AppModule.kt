@@ -67,4 +67,14 @@ class AppModule {
             .create(ActorCodeApi::class.java)
     }
 
+    @Singleton
+    @Provides
+    fun provideSearchMovieListApi(): SearchMovieListApi {
+        return Retrofit.Builder()
+            .baseUrl(ApiKeys.BOXOFFICE_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(SearchMovieListApi::class.java)
+    }
+
 }

@@ -31,7 +31,7 @@ import com.movie.movieapplication.screens.viewmodels.MovieViewModel
 import com.movie.movieapplication.ui.theme.MainColor
 import com.movie.movieapplication.widgets.CenterCircularProgressIndicator
 import com.movie.movieapplication.widgets.MovieAppBar
-import com.movie.movieapplication.widgets.MovieCard
+import com.movie.movieapplication.widgets.MovieCardWithCodeOrInfo
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -92,7 +92,7 @@ fun ActorDetailMainContent(navController: NavController, actorData: PeopleInfo, 
             .fillMaxWidth(), verticalAlignment = Alignment.Top, count = actorData.filmos.size, itemSpacing = (-150).dp
         ) { page ->
             Column(modifier = Modifier.wrapContentSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                MovieCard(modifier = Modifier.width(200.dp), navController = navController, rank = -1, movieCode = actorData.filmos[page].movieCd, movieBoxInfo = null)
+                MovieCardWithCodeOrInfo(modifier = Modifier.width(200.dp), navController = navController, rank = -1, movieCode = actorData.filmos[page].movieCd, movieBoxInfo = null)
                 Text(text = actorData.filmos[page].movieNm, fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = Color.LightGray)
             }
         }
