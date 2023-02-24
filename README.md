@@ -1,6 +1,13 @@
 # Movie-App
 Movie Application
 
+## API
+https://www.kobis.or.kr/kobisopenapi/homepg/apiservice/searchServiceInfo.do
+https://developers.naver.com/docs/serviceapi/search/movie/movie.md
+
+## Icon
+<a href="https://www.freepik.com/free-vector/contest-awards-emblems-set_14263592.htm#query=rank&position=0&from_view=search&track=sph">Image by macrovector</a> on Freepik
+
 Used : <img src="https://img.shields.io/badge/Android-3DDC84?style=flat&logo=Android&logoColor=white"> <img src="https://img.shields.io/badge/Kotlin-7F52FF?style=flat&logo=Kotlin&logoColor=white"> 
 
 	      MVVM, Hilt, Compose, Retrofit, Coil
