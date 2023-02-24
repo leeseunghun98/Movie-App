@@ -15,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.movie.movieapplication.model.BoxOfficeInfo
 import com.movie.movieapplication.model.searchmovieinfo.Actor
 import com.movie.movieapplication.navigation.AllScreens
 import com.movie.movieapplication.screens.viewmodels.ActorInfoViewModel
@@ -61,8 +61,8 @@ fun ActorCard(
         color = Color(0xFF222222)
     ) {
         Column(modifier = Modifier.padding(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = actorInfo.peopleNm, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light, color = Color.LightGray))
-            Text(text = if (actorInfo.cast == "") "배우" else actorInfo.cast + " 역", color = Color.Gray, fontSize = 15.sp, fontWeight = FontWeight.Light)
+            Text(text = actorInfo.peopleNm, style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light, color = Color.LightGray, textAlign = TextAlign.Center))
+            Text(text = if (actorInfo.cast == "") "배우" else actorInfo.cast + " 역", color = Color.Gray, fontSize = 15.sp, fontWeight = FontWeight.Light, textAlign = TextAlign.Center)
         }
     }
 }

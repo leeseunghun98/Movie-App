@@ -36,7 +36,6 @@ fun getLastMonth(): String {
 }
 
 fun getMovieItemsFromMovieInfo(movieList: JsonObject): JSONObject? {
-    Log.d("로그", movieList.toString())
     val json = JSONArray(movieList.get("items").toString())
     if (json.length() > 0) {
         return json.getJSONObject(0)

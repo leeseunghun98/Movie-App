@@ -1,5 +1,6 @@
 package com.movie.movieapplication.widgets
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
@@ -20,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,7 +55,7 @@ fun RankMovieCard(
 ) {
     Box(modifier = modifier.padding(top = 4.dp, bottom = 4.dp)) {
         MovieCardWithCodeOrInfo(
-            modifier = Modifier.padding(top = if (rank >= 0) 15.dp else 4.dp),
+            modifier = Modifier.padding(top = if (rank >= 0) 18.dp else 4.dp),
             movieBoxInfo = movieBoxInfo,
             rank = rank,
             movieInfo = movieInfo,
@@ -161,7 +163,9 @@ private fun MovieCardLoading(
                             navController?.navigate(AllScreens.MovieDetailScreen.name + "?movieCode=${movieInfo.movieCd}")
                         }
                     } else {
-                        Toast.makeText(context, "No Data!", Toast.LENGTH_SHORT).show()
+                        Toast
+                            .makeText(context, "No Data!", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 },
             color = DeepMainColor,
@@ -176,39 +180,49 @@ private fun MovieCardLoading(
                     text = "No Image",
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.LightGray
+                    color = Color.LightGray,
+                    textAlign = TextAlign.Center
                 )
             }
         }
     } else {
-        // TODO : Loading Size
-        Surface(
-            modifier = modifier
-                .padding(4.dp)
-                .clickable {
-                    if (movieInfo != null) {
-                        if (movieBoxInfo != null) {
-                            val json = Uri.encode(Gson().toJson(movieBoxInfo))
-                            navController?.navigate(AllScreens.MovieDetailScreen.name + "?movieCode=${movieInfo.movieCd}&movieBoxData=${json}")
-                        } else {
-                            navController?.navigate(AllScreens.MovieDetailScreen.name + "?movieCode=${movieInfo.movieCd}")
-                        }
+        MovieImage(modifier = modifier, movieInfo = movieInfo, movieBoxInfo = movieBoxInfo, navController = navController, context = context, imageUrl = imageUrl.toString())
+    }
+}
+
+@Composable
+private fun MovieImage(
+    modifier: Modifier,
+    movieInfo: MovieInfo?,
+    movieBoxInfo: BoxOfficeInfo?,
+    navController: NavController?,
+    context: Context,
+    imageUrl: String
+) {
+    val imagePainter = rememberAsyncImagePainter(model = ImageRequest.Builder(LocalContext.current).data(imageUrl).crossfade(true).build())
+    Surface(
+        modifier = modifier
+            .padding(4.dp)
+            .clickable {
+                if (movieInfo != null) {
+                    if (movieBoxInfo != null) {
+                        val json = Uri.encode(Gson().toJson(movieBoxInfo))
+                        navController?.navigate(AllScreens.MovieDetailScreen.name + "?movieCode=${movieInfo.movieCd}&movieBoxData=${json}")
                     } else {
-                        Toast.makeText(context, "No Data!", Toast.LENGTH_SHORT).show()
+                        navController?.navigate(AllScreens.MovieDetailScreen.name + "?movieCode=${movieInfo.movieCd}")
                     }
-                },
-            color = Color.Transparent,
-            border = BorderStroke(width = 1.dp, color = Color.LightGray),
-            shape = RoundedCornerShape(CornerSize(15.dp))
-        ) {
-            val imagePainter = rememberAsyncImagePainter(model = ImageRequest.Builder(LocalContext.current).data(imageUrl).crossfade(true).build())
-            Image(
-                modifier = Modifier.fillMaxWidth(),
-                painter = imagePainter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-        }
+                }
+            },
+        color = Color.Transparent,
+        border = BorderStroke(width = 1.dp, color = Color.LightGray),
+        shape = RoundedCornerShape(CornerSize(15.dp))
+    ) {
+        Image(
+            modifier = Modifier.fillMaxWidth().aspectRatio(0.707f),
+            painter = imagePainter,
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
@@ -226,7 +240,7 @@ private fun RankIcon(rank: Int) {
         Image(
             painter = painterResource(id = rankDrawable),
             contentDescription = null,
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(35.dp)
         )
     } else {
         Text(

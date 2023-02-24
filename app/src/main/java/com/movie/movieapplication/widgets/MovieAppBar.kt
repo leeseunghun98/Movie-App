@@ -1,7 +1,6 @@
 package com.movie.movieapplication.widgets
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.movie.movieapplication.navigation.AllScreens
 import com.movie.movieapplication.screens.mainscreen.MainViewModel
-import com.movie.movieapplication.screens.searchscreen.SearchBar
 import com.movie.movieapplication.ui.theme.DeepMainColor
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -44,25 +41,20 @@ fun MovieAppBar(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
+                    val modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                        .fillMaxHeight()
                     DailyWeeklyMonthly(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .fillMaxHeight(),
+                        modifier = modifier,
                         day = "Daily"
                     )
                     DailyWeeklyMonthly(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .fillMaxHeight(),
+                        modifier = modifier,
                         day = "Weekly"
                     )
                     DailyWeeklyMonthly(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(4.dp)
-                            .fillMaxHeight(),
+                        modifier = modifier,
                         day = "Monthly"
                     )
                 }
@@ -81,15 +73,15 @@ fun MovieAppBar(
                         tint = Color.White
                     )
                 }
-                IconButton(onClick = {
-// TODO                onMenuClicked()
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = "More Icon",
-                        tint = Color.White
-                    )
-                }
+//                IconButton(onClick = {
+//
+//                }) {
+//                    Icon(
+//                        imageVector = Icons.Rounded.MoreVert,
+//                        contentDescription = "More Icon",
+//                        tint = Color.White
+//                    )
+//                }
             }
         },
         navigationIcon = if (!isMainScreen) {

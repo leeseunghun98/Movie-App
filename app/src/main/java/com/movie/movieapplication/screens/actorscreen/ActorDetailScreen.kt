@@ -85,7 +85,7 @@ fun ActorDetailMainContent(navController: NavController, actorData: PeopleInfo, 
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(4.dp)) {
-        Text(text = "이 배우의 다른 영화 보기", style = TextStyle(fontSize = 20.sp, color = Color.LightGray, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline))
+        Text(text = "이 배우의 다른 영화 보기", modifier = Modifier.padding(4.dp), style = TextStyle(fontSize = 20.sp, color = Color.LightGray, fontWeight = FontWeight.Bold))
 
         HorizontalPager(modifier = Modifier
             .wrapContentHeight()
